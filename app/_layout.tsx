@@ -7,6 +7,7 @@ import { StyleSheet } from 'react-native';
 
 import Colors from '@/constants/colors';
 import { GamificationProvider } from '@/contexts/GamificationContext';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 import { trpc, trpcClient } from '@/lib/trpc';
 
 SplashScreen.preventAutoHideAsync();
@@ -53,11 +54,13 @@ export default function RootLayout() {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <GamificationProvider>
-          <GestureHandlerRootView style={styles.container}>
-            <RootLayoutNav />
-          </GestureHandlerRootView>
-        </GamificationProvider>
+        <LanguageProvider>
+          <GamificationProvider>
+            <GestureHandlerRootView style={styles.container}>
+              <RootLayoutNav />
+            </GestureHandlerRootView>
+          </GamificationProvider>
+        </LanguageProvider>
       </QueryClientProvider>
     </trpc.Provider>
   );

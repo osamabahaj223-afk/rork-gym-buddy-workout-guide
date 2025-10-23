@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, Dumbbell, Trophy, TrendingUp, User, UtensilsCrossed, Droplet } from 'lucide-react-native';
+import { Home, Dumbbell, Trophy, TrendingUp, User, UtensilsCrossed, Droplet, Settings } from 'lucide-react-native';
 import React from 'react';
 
 import Colors from '@/constants/colors';
@@ -67,6 +67,13 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color }) => <User size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color }) => <Settings size={24} color={color} />,
         }}
       />
       <Tabs.Screen
