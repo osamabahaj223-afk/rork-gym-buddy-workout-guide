@@ -7,24 +7,21 @@ import { getLocales } from 'expo-localization';
 import en from '@/locales/en';
 import es from '@/locales/es';
 import fr from '@/locales/fr';
-import ar from '@/locales/ar';
 
 const LANGUAGE_STORAGE_KEY = '@gym_buddy_language';
 
-export type SupportedLanguage = 'en' | 'es' | 'fr' | 'ar';
+export type SupportedLanguage = 'en' | 'es' | 'fr';
 
 export const LANGUAGES = [
   { code: 'en' as const, name: 'English', flag: '🇬🇧' },
   { code: 'es' as const, name: 'Español', flag: '🇪🇸' },
   { code: 'fr' as const, name: 'Français', flag: '🇫🇷' },
-  { code: 'ar' as const, name: 'العربية', flag: '🇸🇦' },
 ];
 
 const i18n = new I18n({
   en,
   es,
   fr,
-  ar,
 });
 
 i18n.enableFallback = true;
@@ -41,7 +38,7 @@ export const [LanguageProvider, useLanguage] = createContextHook(() => {
   const loadLanguage = async () => {
     try {
       const stored = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
-      if (stored && (stored === 'en' || stored === 'es' || stored === 'fr' || stored === 'ar')) {
+      if (stored && (stored === 'en' || stored === 'es' || stored === 'fr')) {
         setCurrentLanguage(stored);
         i18n.locale = stored;
       } else {
@@ -49,7 +46,6 @@ export const [LanguageProvider, useLanguage] = createContextHook(() => {
         const defaultLang = 
           deviceLocale === 'es' ? 'es' : 
           deviceLocale === 'fr' ? 'fr' : 
-          deviceLocale === 'ar' ? 'ar' : 
           'en';
         setCurrentLanguage(defaultLang);
         i18n.locale = defaultLang;
