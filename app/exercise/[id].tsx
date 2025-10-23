@@ -29,6 +29,8 @@ export default function ExerciseDetailScreen() {
   const [imageError, setImageError] = useState<boolean>(false);
   const [gifLoading, setGifLoading] = useState<boolean>(true);
   const [gifError, setGifError] = useState<boolean>(false);
+  const [currentGifUrl, setCurrentGifUrl] = useState<string>('');
+  const [currentImageUrl, setCurrentImageUrl] = useState<string>('');
 
   let exercise: Exercise | undefined;
 
@@ -39,6 +41,13 @@ export default function ExerciseDetailScreen() {
       break;
     }
   }
+
+  React.useEffect(() => {
+    if (exercise) {
+      setCurrentGifUrl(exercise.gifUrl || exercise.imageUrl);
+      setCurrentImageUrl(exercise.gifUrl || exercise.imageUrl);
+    }
+  }, [exercise]);
 
   if (!exercise) {
     return (
@@ -59,25 +68,27 @@ export default function ExerciseDetailScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.heroImageContainer}>
-        <Image
-          source={{ uri: exercise.gifUrl || exercise.imageUrl }}
-          style={styles.heroImage}
-          resizeMode="cover"
-          onLoadStart={() => setImageLoading(true)}
-          onLoadEnd={() => setImageLoading(false)}
-          onError={() => {
-            setImageLoading(false);
-            setImageError(true);
-          }}
-        />
+        {!imageError ? (
+          <Image
+            source={{ uri: currentImageUrl }}
+            style={styles.heroImage}
+            resizeMode="cover"
+            onLoadStart={() => setImageLoading(true)}
+            onLoadEnd={() => setImageLoading(false)}
+            onError={() => {
+              console.log(`Failed to load hero image: ${currentImageUrl}`);
+              setImageLoading(false);
+              setImageError(true);
+            }}
+          />
+        ) : (
+          <View style={styles.heroImagePlaceholder}>
+            <Text style={styles.heroImagePlaceholderText}>{exercise.muscleGroup}</Text>
+          </View>
+        )}
         {imageLoading && (
           <View style={styles.loadingOverlay}>
             <ActivityIndicator size="large" color={Colors.primary} />
-          </View>
-        )}
-        {imageError && (
-          <View style={styles.errorOverlay}>
-            <Text style={styles.errorText}>Image unavailable</Text>
           </View>
         )}
       </View>
@@ -99,15 +110,16 @@ export default function ExerciseDetailScreen() {
       >
         <View style={styles.exerciseHeader}>
           <View style={styles.demoContainer}>
-            {exercise.gifUrl ? (
+            {currentGifUrl && !gifError ? (
               <View style={styles.gifWrapper}>
                 <Image
-                  source={{ uri: exercise.gifUrl }}
+                  source={{ uri: currentGifUrl }}
                   style={styles.demoGif}
                   resizeMode="contain"
                   onLoadStart={() => setGifLoading(true)}
                   onLoadEnd={() => setGifLoading(false)}
                   onError={() => {
+                    console.log(`Failed to load gif: ${currentGifUrl}`);
                     setGifLoading(false);
                     setGifError(true);
                   }}
@@ -118,12 +130,7 @@ export default function ExerciseDetailScreen() {
                     <Text style={styles.loadingText}>Loading demo...</Text>
                   </View>
                 )}
-                {gifError && (
-                  <View style={styles.gifErrorOverlay}>
-                    <Text style={styles.gifErrorText}>Demo unavailable</Text>
-                  </View>
-                )}
-                {!gifLoading && !gifError && (
+                {!gifLoading && (
                   <View style={styles.gifBadge}>
                     <Text style={styles.gifBadgeText}>LIVE DEMO</Text>
                   </View>
@@ -499,5 +506,18 @@ const styles = StyleSheet.create({
   gifErrorText: {
     fontSize: 14,
     color: Colors.textSecondary,
+  },
+  heroImagePlaceholder: {
+    width: '100%',
+    height: 300,
+    backgroundColor: Colors.primary + '20',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  heroImagePlaceholderText: {
+    fontSize: 24,
+    fontWeight: '700' as const,
+    color: Colors.primary,
+    textTransform: 'uppercase' as const,
   },
 });
