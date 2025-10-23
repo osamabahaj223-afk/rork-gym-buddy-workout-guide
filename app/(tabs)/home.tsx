@@ -64,11 +64,17 @@ export default function HomeScreen() {
     try {
       const stored = await AsyncStorage.getItem(WATER_STORAGE_KEY);
       if (stored) {
-        const data: WaterData = JSON.parse(stored);
-        const today = new Date().toDateString();
-        if (data.date === today) {
-          setWaterConsumed(data.consumed);
-        } else {
+        try {
+          const data: WaterData = JSON.parse(stored);
+          const today = new Date().toDateString();
+          if (data.date === today) {
+            setWaterConsumed(data.consumed);
+          } else {
+            setWaterConsumed(0);
+          }
+        } catch (parseError) {
+          console.log('Error parsing water data in home:', parseError);
+          await AsyncStorage.removeItem(WATER_STORAGE_KEY);
           setWaterConsumed(0);
         }
       }

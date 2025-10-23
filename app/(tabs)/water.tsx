@@ -38,12 +38,19 @@ export default function WaterScreen() {
     try {
       const stored = await AsyncStorage.getItem(WATER_STORAGE_KEY);
       if (stored) {
-        const data: WaterData = JSON.parse(stored);
-        const today = new Date().toDateString();
-        if (data.date === today) {
-          setConsumed(data.consumed);
-          setHasReachedGoal(data.consumed >= DAILY_GOAL);
-        } else {
+        try {
+          const data: WaterData = JSON.parse(stored);
+          const today = new Date().toDateString();
+          if (data.date === today) {
+            setConsumed(data.consumed);
+            setHasReachedGoal(data.consumed >= DAILY_GOAL);
+          } else {
+            setConsumed(0);
+            setHasReachedGoal(false);
+          }
+        } catch (parseError) {
+          console.log('Error parsing water data, resetting:', parseError);
+          await AsyncStorage.removeItem(WATER_STORAGE_KEY);
           setConsumed(0);
           setHasReachedGoal(false);
         }
@@ -64,11 +71,15 @@ export default function WaterScreen() {
       };
 
       if (stored) {
-        const oldData: WaterData = JSON.parse(stored);
-        if (oldData.date === today) {
-          data = { ...oldData, consumed: amount };
-        } else {
-          data.history = [{ date: oldData.date, amount: oldData.consumed }, ...oldData.history].slice(0, 30);
+        try {
+          const oldData: WaterData = JSON.parse(stored);
+          if (oldData.date === today) {
+            data = { ...oldData, consumed: amount };
+          } else {
+            data.history = [{ date: oldData.date, amount: oldData.consumed }, ...oldData.history].slice(0, 30);
+          }
+        } catch (parseError) {
+          console.log('Error parsing stored water data, creating fresh:', parseError);
         }
       }
 

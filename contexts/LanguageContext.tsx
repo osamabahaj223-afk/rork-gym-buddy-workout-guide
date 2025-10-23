@@ -39,7 +39,7 @@ export const [LanguageProvider, useLanguage] = createContextHook(() => {
     try {
       const stored = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
       if (stored && (stored === 'en' || stored === 'es' || stored === 'fr')) {
-        setCurrentLanguage(stored);
+        setCurrentLanguage(stored as SupportedLanguage);
         i18n.locale = stored;
       } else {
         const deviceLocale = getLocales()[0]?.languageCode;
@@ -52,6 +52,8 @@ export const [LanguageProvider, useLanguage] = createContextHook(() => {
       }
     } catch (error) {
       console.log('Error loading language:', error);
+      setCurrentLanguage('en');
+      i18n.locale = 'en';
     } finally {
       setIsLoading(false);
     }

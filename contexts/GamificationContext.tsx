@@ -129,9 +129,14 @@ export const [GamificationProvider, useGamification] = createContextHook(() => {
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
-        const parsed = JSON.parse(stored);
-        setUserStats((prev) => parsed.userStats || prev);
-        setChallenges((prev) => parsed.challenges || prev);
+        try {
+          const parsed = JSON.parse(stored);
+          setUserStats((prev) => parsed.userStats || prev);
+          setChallenges((prev) => parsed.challenges || prev);
+        } catch (parseError) {
+          console.log('Error parsing gamification stats, resetting:', parseError);
+          await AsyncStorage.removeItem(STORAGE_KEY);
+        }
       }
     } catch (error) {
       console.log('Error loading stats:', error);
