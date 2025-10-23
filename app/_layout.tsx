@@ -8,6 +8,7 @@ import { StyleSheet } from 'react-native';
 import Colors from '@/constants/colors';
 import { GamificationProvider } from '@/contexts/GamificationContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
+import { WorkoutCustomizationProvider } from '@/contexts/WorkoutCustomizationContext';
 import { trpc, trpcClient } from '@/lib/trpc';
 
 SplashScreen.preventAutoHideAsync();
@@ -66,9 +67,11 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <LanguageProvider>
           <GamificationProvider>
-            <GestureHandlerRootView style={styles.container}>
-              <RootLayoutNav />
-            </GestureHandlerRootView>
+            <WorkoutCustomizationProvider>
+              <GestureHandlerRootView style={styles.container}>
+                <RootLayoutNav />
+              </GestureHandlerRootView>
+            </WorkoutCustomizationProvider>
           </GamificationProvider>
         </LanguageProvider>
       </QueryClientProvider>
